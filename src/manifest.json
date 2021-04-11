@@ -1,0 +1,16 @@
+{
+  "manifest_version": 2,
+  "name": "mto",
+  "description": "description",
+  "version": "0.0.1",
+  "icons": {
+    "48": "icons/shape-line-48.png"
+  },
+  "browser_action": {
+    "default_icon": {
+      "64": "icons/shape-line-48.png"
+    },
+    "default_popup": "index.html",
+    "default_title": "mto"
+  }
+}
