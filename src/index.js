@@ -1,34 +1,45 @@
-const txtArea = document.getElementById('urls');
+const urlTargets = document.getElementById('urls');
 const results = document.getElementById('results');
 const btn = document.getElementById('submit');
 const engines = document.getElementById('engines');
 
 const prefix = {
-  google: 'https://www.google.com/search?q=',
-  qwant: 'https://www.qwant.com/?q=',
-  bing: 'https://www.bing.com/search?q=',
+  Google: 'https://www.google.com/search?q=',
+  Qwant: 'https://www.qwant.com/?q=',
+  Bing: 'https://www.bing.com/search?q=',
+  Lilo: 'https://search.lilo.org/results.php?q=',
 };
 
+const filterInput = (text) => text.split('\n').filter((e) => !!e);
+
 const createUrl = (text, engine) =>
-  text
-    .split('\n')
-    .filter((e) => !!e)
-    .reduce((acc, cur) => `${acc}${prefix[engine]}${encodeURI(cur)}\n`, '');
+  filterInput(text).reduce(
+    (acc, cur) => `${acc}${prefix[engine]}${encodeURI(cur)}\n`,
+    ''
+  );
+
+const loadPrefix = Object.keys(prefix).forEach((key) => {
+  const child = document.createElement('option');
+  child.setAttribute('value', key);
+  child.innerText = key;
+  engines.appendChild(child);
+});
 
 btn.onclick = () =>
   Promise.allSettled(
-    results.innerText
-      .split('\n')
-      .filter((url) => !!url)
-      .map((url) => browser.tabs.create({ url, active: false }))
+    filterInput(results.innerText).map((url) =>
+      browser.tabs.create({ url, active: false })
+    )
   )
     .catch(console.error)
-    .finally(() => window.close());
+    .finally(window.close);
 
-txtArea.addEventListener('input', (event) => {
+document.addEventListener('loadEnd', loadPrefix, { once: true });
+
+urlTargets.addEventListener('input', (event) => {
   results.innerText = createUrl(event.target.value, engines.value);
 });
 
 engines.addEventListener('change', (event) => {
-  results.innerText = createUrl(txtArea.value, event.target.value);
+  results.innerText = createUrl(urlTargets.value, event.target.value);
 });
