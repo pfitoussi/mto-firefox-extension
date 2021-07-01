@@ -4,7 +4,7 @@
   "description": "# Description Exhausted to manually copy/paste line by line tracklist from a comment in a youtube video (thx TracklistGuy <3) or from a soundcloud mix which the author generously answers this eternal question : ID ????",
   "main": "script.js",
   "scripts": {
-    "start": "web-ext run --source-dir ./src/",
+    "start": "web-ext run --source-dir ./src/ --verbose",
     "lint": "eslint ."
   },
   "repository": {
