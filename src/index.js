@@ -1,15 +1,9 @@
+import { createUrl } from './utils.js';
+
 const urlTargets = document.getElementById('urls');
 const results = document.getElementById('results');
 const btn = document.getElementById('submit');
 const engines = document.getElementById('engines');
-
-const filterInput = (text) => text.split('\n').filter((e) => !!e);
-
-const createUrl = (text, prefixUrl) =>
-  filterInput(text).reduce(
-    (acc, cur) => `${acc}${prefixUrl}${encodeURI(cur)}\n`,
-    ''
-  );
 
 const prefix = {
   Google: 'https://www.google.com/search?q=',
