@@ -21,3 +21,8 @@ Seriously ?
 1. Automatically paste the clipboard when action button is clicked.
 2. Keyboard shortcut
 3. Detect URL
+
+Popup is used to configure preferenced search engine with local storage and propose an input text box and preview url. (button send message to background.js)
+A context menu item is create with cursor selection and propose to open in multiple new tab.(Send message to background.js)
+background.js listen for message, when triggered, get the local variable for prefered search engine and launch all the tabs.
+
