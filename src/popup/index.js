@@ -1,4 +1,4 @@
-import { createUrl } from './utils.js';
+import { createUrl } from '../utils.js';
 
 const urlTargets = document.getElementById('urls');
 const results = document.getElementById('results');

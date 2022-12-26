@@ -1,4 +1,4 @@
-import { filterInput, createUrl } from './utils.js';
+import { filterInput, createUrl } from '../utils.js';
 
 browser.runtime.onInstalled.addListener(() => {
   browser.contextMenus.create({

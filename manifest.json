@@ -10,11 +10,11 @@
     "default_icon": {
       "64": "assets/shape-line-48.png"
     },
-    "default_popup": "src/index.html",
+    "default_popup": "src/popup/index.html",
     "default_title": "mto"
   },
   "background": {
-    "page": "src/background.html",
+    "page": "src/background/background.html",
     "persistent": false
   },
 
