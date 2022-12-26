@@ -1,24 +1,16 @@
 import { filterInput, createUrl } from './utils.js';
 
-browser.contextMenus.create({
-  id: 'multiple-tab-opener',
-  type: 'radio',
-  title: 'Open in multiple tab',
-  contexts: ['selection'],
-  checked: true,
+browser.runtime.onInstalled.addListener(() => {
+  browser.contextMenus.create({
+    id: 'multiple-tab-opener',
+    type: 'radio',
+    title: 'Open in multiple tab',
+    contexts: ['selection'],
+    checked: true,
+  });
 });
-
-const openMultipleUrl = (toParse) =>
-  Promise.allSettled(
-    filterInput(toParse).map((url) =>
-      browser.tabs.create({ url, active: false })
-    )
-  )
-    .catch(console.error)
-    .finally(window.close);
-
 browser.runtime.onMessage.addListener((request) => {
-  openMultipleUrl(request);
+  return openMultipleUrl(request);
 });
 
 browser.contextMenus.onClicked.addListener(
@@ -39,3 +31,12 @@ browser.contextMenus.onClicked.addListener(
     }
   }
 );
+
+const openMultipleUrl = (toParse) =>
+  Promise.allSettled(
+    filterInput(toParse).map((url) =>
+      browser.tabs.create({ url, active: false })
+    )
+  )
+    .catch(console.error)
+    .finally(window.close);

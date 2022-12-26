@@ -4,7 +4,7 @@ body * {
 }
 
 .container {
-  display: grid;
+  display: block;
 }
 
 .container * {
