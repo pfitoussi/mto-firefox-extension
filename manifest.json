@@ -18,5 +18,13 @@
     "persistent": false
   },
 
-  "permissions": ["activeTab", "contextMenus", "storage"]
+  "permissions": [
+    "activeTab",
+    "contextMenus",
+    "storage",
+    "webRequest",
+    "webRequestBlocking",
+    "https://soundcloud.com/*",
+    "https://api-v2.soundcloud.com/*"
+  ]
 }
