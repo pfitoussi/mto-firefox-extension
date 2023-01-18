@@ -18,27 +18,25 @@ browser.runtime.onMessage.addListener((request) => {
   return openMultipleUrl(request);
 });
 
+let bufferByRequest = {};
 browser.webRequest.onBeforeRequest.addListener(
   ({ requestId }) => {
     const filter = browser.webRequest.filterResponseData(requestId);
-    let bufferByRequest = {};
     const decoder = new TextDecoder('utf-8');
 
     filter.ondata = (event) => {
       if (bufferByRequest.hasOwnProperty(requestId))
-        bufferByRequest[requestId].push(event.data);
-      else Object.assign(bufferByRequest, { [requestId]: [event.data] });
+        bufferByRequest[requestId].push(decoder.decode(event.data));
+      else
+        Object.assign(bufferByRequest, {
+          [requestId]: [decoder.decode(event.data)],
+        });
       filter.write(event.data);
     };
 
     filter.onstop = (_) => {
       const result = Object.values(bufferByRequest)
-        .map((value) => value)
-        .map((buffers) =>
-          buffers
-            .map((buffer) => decoder.decode(buffer, { stream: true }))
-            .join()
-        )
+        .flatMap((buffers) => buffers.join(''))
         .map((payload) => JSON.parse(payload));
 
       console.log(result);
