@@ -17,7 +17,16 @@
     "page": "src/background/background.html",
     "persistent": false
   },
-
+  "content_scripts": [
+    {
+      "matches": ["https://soundcloud.com/*"],
+      "js": [
+        "src/browser-polyfill.min.js",
+        "src/content/utils.js",
+        "src/content/comments.js"
+      ]
+    }
+  ],
   "permissions": [
     "activeTab",
     "contextMenus",
