@@ -19,7 +19,7 @@ const loadPrefix = Object.keys(prefix).forEach((key) => {
   engines.appendChild(child);
 });
 
-btn.onclick = () => browser.runtime.sendMessage(results.innerText);
+btn.onclick = () => browser.runtime.sendMessage({type: 'open', data: results.innerText});
 
 document.addEventListener('loadEnd', loadPrefix, { once: true });
 

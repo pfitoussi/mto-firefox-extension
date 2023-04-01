@@ -1,7 +1,7 @@
-import { filterInput, createUrl } from '../utils.js';
-const targets = [
-  'https://api-v2.soundcloud.com/*comments',
-  'https://api-v2.soundcloud.com/*comments?*',
+import { filterInput, createUrl, handleResponse } from '../utils.js';
+const commentTargets = [
+  'https://api-v2.soundcloud.com/tracks/*/comments',
+  'https://api-v2.soundcloud.com/tracks/*/comments?*',
 ];
 
 browser.runtime.onInstalled.addListener(() => {
@@ -14,43 +14,46 @@ browser.runtime.onInstalled.addListener(() => {
   });
 });
 
-browser.runtime.onMessage.addListener((request) => {
-  return openMultipleUrl(request);
+browser.runtime.onMessage.addListener((message) => {
+  if (message.type === 'open') openMultipleUrl(message.data);
 });
 
-let bufferByRequest = {};
+const trackIdReg = /tracks\/(\d+)\/comments/;
 browser.webRequest.onBeforeRequest.addListener(
-  ({ requestId }) => {
-    const filter = browser.webRequest.filterResponseData(requestId);
+  (details) => {
+    if (!details.url.match(/.*limit=200.*/)) return {};
+    const filter = browser.webRequest.filterResponseData(details.requestId);
     const decoder = new TextDecoder('utf-8');
+    const encoder = new TextEncoder();
+    const trackId = details.url.match(trackIdReg)[1];
+
+    const data = [];
 
     filter.ondata = (event) => {
-      if (bufferByRequest.hasOwnProperty(requestId))
-        bufferByRequest[requestId].push(decoder.decode(event.data));
-      else
-        Object.assign(bufferByRequest, {
-          [requestId]: [decoder.decode(event.data)],
-        });
-      filter.write(event.data);
+      data.push(event.data);
     };
 
-    filter.onstop = (_) => {
-      const result = Object.values(bufferByRequest)
-        .flatMap((buffers) => buffers.join(''))
-        .map((payload) => JSON.parse(payload));
+    filter.onstop = () => {
+      let str = '';
+      for (const buffer of data) {
+        str += decoder.decode(buffer, { stream: true });
+      }
+      str += decoder.decode();
 
-      console.log(result);
-      filter.disconnect();
+      console.log({ trackId, data: JSON.parse(str) });
+      filter.write(encoder.encode(str));
+      filter.close();
     };
 
     filter.onerror = (event) => {
-      console.log(`Error: ${filter.error}`);
-      console.log(event);
+      // console.log(`Error: ${filter.error}`);
+      // console.log(event);
+      // console.log(details);
     };
 
     return {};
   },
-  { urls: targets },
+  { urls: commentTargets },
   ['blocking']
 );
 
