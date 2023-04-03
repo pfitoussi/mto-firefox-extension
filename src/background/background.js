@@ -1,4 +1,4 @@
-import { filterInput, createUrl, handleResponse } from '../utils.js';
+import { filterInput, createUrl } from '../utils.js';
 const commentTargets = [
   'https://api-v2.soundcloud.com/tracks/*/comments',
   'https://api-v2.soundcloud.com/tracks/*/comments?*',
@@ -17,6 +17,13 @@ browser.runtime.onInstalled.addListener(() => {
 browser.runtime.onMessage.addListener((message) => {
   if (message.type === 'open') openMultipleUrl(message.data);
 });
+
+let store = {};
+const aggregateComments = ({ trackId, data }) => {
+  if (store[trackId]) store[trackId] = [...store[trackId], ...data.collection];
+  else store[trackId] = [...data.collection];
+  if (data.next_href) fetch(data.next_href);
+};
 
 const trackIdReg = /tracks\/(\d+)\/comments/;
 browser.webRequest.onBeforeRequest.addListener(
@@ -40,7 +47,8 @@ browser.webRequest.onBeforeRequest.addListener(
       }
       str += decoder.decode();
 
-      console.log({ trackId, data: JSON.parse(str) });
+      aggregateComments({ trackId, data: JSON.parse(str) });
+      console.log('Store: ', store);
       filter.write(encoder.encode(str));
       filter.close();
     };
